@@ -160,7 +160,7 @@ trait Elasticsearch6MigrationTrait
         return $indices->exists(['index' => $index]);
     }
 
-    private function getIndex()
+    private function getIndexPrefix()
     {
         return $this->connector->getSettings()['index_prefix'];
     }
