@@ -89,7 +89,7 @@ trait Elasticsearch6MigrationTrait
 
         if (true === $reindexRequired && true === $reindexIfRequired) {
             $dest = sprintf('%s.%d', $index, $this->getVersion());
-            $this->reindexWithMapping($index, $dest, $mapping);
+            $this->reindexWithMappings($index, $dest, $mappings);
         }
     }
 
