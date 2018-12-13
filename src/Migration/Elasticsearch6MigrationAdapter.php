@@ -81,7 +81,6 @@ final class Elasticsearch6MigrationAdapter implements MigrationAdapterInterface
 
     private function getIndex(): string
     {
-        $index = $this->settings['index'] ?? $this->connector->getSettings()['index'];
-        return "$index.migration_list";
+        return $this->settings['index'] ?? $this->connector->getSettings()['index'];
     }
 }
