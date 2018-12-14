@@ -71,25 +71,12 @@ trait Elasticsearch6MigrationTrait
         $indices->delete(['index' => $index]);
     }
 
-    private function putMappings(string $index, array $mappings, bool $reindexIfRequired = false): void
+    private function putMappings(string $index, array $mappings): void
     {
         $indices = $this->connector->getConnection()->indices();
-        $reindexRequired = false;
 
-        try {
-            foreach ($mappings as $type => $mapping) {
-                $indices->putMapping(['index' => $index, 'type' => $type, 'body' => $mapping]);
-            }
-        } catch (BadRequest400Exception $error) {
-            if (!$reindexIfRequired) {
-                throw $error;
-            }
-            $reindexRequired = true;
-        }
-
-        if (true === $reindexRequired && true === $reindexIfRequired) {
-            $dest = sprintf('%s.%d', $index, $this->getVersion());
-            $this->reindexWithMappings($index, $dest, $mappings);
+        foreach ($mappings as $type => $mapping) {
+            $indices->putMapping(['index' => $index, 'type' => $type, 'body' => $mapping]);
         }
     }
 
