@@ -36,11 +36,13 @@ final class Elasticsearch6StorageAdapter implements StorageAdapterInterface, Sea
     public function read(string $identifier): ?ProjectionInterface
     {
         try {
-            $document = $this->connector->getConnection()->get([
-                'index' => $this->getIndex(),
-                'type' => $this->settings['type'],
-                'id' => $identifier
-            ]);
+            $document = $this->connector->getConnection()->get(
+                array_merge($this->settings['read'] ?? [], [
+                    'index' => $this->getIndex(),
+                    'type' => $this->settings['type'],
+                    'id' => $identifier
+                ])
+            );
         } catch (Missing404Exception $error) {
             return null;
         }
@@ -51,12 +53,12 @@ final class Elasticsearch6StorageAdapter implements StorageAdapterInterface, Sea
 
     public function write(string $identifier, array $data): bool
     {
-        $document = [
+        $document = array_merge($this->settings['write'] ?? [], [
             'index' => $this->getIndex(),
             'type' => $this->settings['type'],
             'id' => $identifier,
             'body' => $data
-        ];
+        ]);
 
         $this->connector->getConnection()->index($document);
 
@@ -65,18 +67,18 @@ final class Elasticsearch6StorageAdapter implements StorageAdapterInterface, Sea
 
     public function delete(string $identifier): bool
     {
-        throw new DbalException('Not yet implemented');
+        throw new DbalException('Not implemented');
     }
 
     public function search(QueryInterface $query, int $from = null, int $size = null): ProjectionMap
     {
-        $query = [
+        $query = array_merge($this->settings['search'] ?? [], [
             'index' => $this->getIndex(),
             'type' => $this->settings['type'],
             'from' => $from,
             'size' => $size,
             'body' => $query->toNative()
-        ];
+        ]);
 
         $results = $this->connector->getConnection()->search($query);
 
